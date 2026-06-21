@@ -1,0 +1,15 @@
+/target/
+/frontend/node_modules/
+/frontend/dist/
+
+PROJECT_GUIDE.md
+VIDEO_SCRIPT.md
+mazecraze_records.txt
+
+*.log
+*.tmp
+*.local
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
