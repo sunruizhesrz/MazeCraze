@@ -6,7 +6,7 @@ use ratatui::{
     widgets::{Block, Borders, List, ListItem, Widget},
 };
 
-/// A selectable list widget for the main menu.
+/// 主菜单使用的可选列表组件。
 pub struct MenuList<'a> {
     items: Vec<&'a str>,
     selected: usize,

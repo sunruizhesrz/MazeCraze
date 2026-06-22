@@ -3,14 +3,13 @@ use rand::Rng;
 
 use crate::core::{Cell, Grid, Point};
 
-/// Randomly break additional walls to introduce loops into a perfect maze.
+/// 随机打破额外的墙，为完美迷宫引入环路。
 ///
-/// `loop_rate` is a value between 0.0 and 1.0 representing the approximate
-/// fraction of eligible walls to break.
+/// `loop_rate` 是 0.0 到 1.0 之间的值，表示要打破的合格墙的近似比例。
 pub fn add_loops<R: Rng>(grid: &mut Grid, rng: &mut R, loop_rate: f64) -> usize {
     let mut candidates = Vec::new();
 
-    // Find all walls that separate two passages (breaking them creates a loop)
+    // 查找所有分隔两个通道的墙（打破它们即可形成环路）
     for y in (2..grid.height() - 1).step_by(2) {
         for x in 1..grid.width() - 1 {
             let p = Point::new(x, y);
@@ -54,13 +53,13 @@ fn is_passage_pair(grid: &Grid, a: Point, b: Point) -> bool {
     matches!(grid.get(a), Some(Cell::Passage)) && matches!(grid.get(b), Some(Cell::Passage))
 }
 
-/// Pick a random passage cell from the grid.
+/// 从网格中随机选取一个通道单元格。
 pub fn random_passage<R: Rng>(grid: &Grid, rng: &mut R) -> Option<Point> {
     let passages = grid.passages();
     passages.choose(rng).copied()
 }
 
-/// Compute the entrance (top-left passage) and exit (bottom-right passage).
+/// 计算入口（左上角通道）和出口（右下角通道）。
 pub fn entrance_exit(grid: &Grid) -> (Point, Point) {
     let entrance = Point::new(1, 1);
     let exit = Point::new(grid.width() - 2, grid.height() - 2);

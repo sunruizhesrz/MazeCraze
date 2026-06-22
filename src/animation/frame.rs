@@ -1,21 +1,21 @@
 use crate::core::Grid;
 
-/// A single frame in an animation sequence.
+/// 动画序列中的单帧。
 ///
-/// Each frame is a snapshot of the maze grid at a specific step,
-/// along with a human-readable description of what happened.
+/// 每一帧都是迷宫网格在特定步骤的快照，
+/// 并附带一段人类可读的动作描述。
 #[derive(Clone, Debug)]
 pub struct Frame {
-    /// The grid state at this step.
+    /// 当前步骤的网格状态。
     pub grid: Grid,
-    /// Step number (0-indexed).
+    /// 步骤编号（从 0 开始）。
     pub step_number: usize,
-    /// Human-readable description of the action.
+    /// 动作的人类可读描述。
     pub description: String,
 }
 
 impl Frame {
-    /// Create a new frame.
+    /// 创建一个新的帧。
     pub fn new(grid: Grid, step_number: usize, description: impl Into<String>) -> Self {
         Self {
             grid,

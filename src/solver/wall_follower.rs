@@ -5,10 +5,10 @@ use crate::core::{Cell, Direction, Grid, Point};
 
 use super::MazeSolver;
 
-/// Wall follower (left-hand rule) maze solver.
+/// 沿墙行走（左手法则）迷宫求解器。
 ///
-/// This simple algorithm keeps one hand on a wall and follows it.
-/// It works for all perfect mazes but may loop in mazes with cycles.
+/// 这个简单的算法始终将一只手放在墙上并顺着墙前进。
+/// 对所有完美迷宫都有效，但在带环路的迷宫中可能陷入循环。
 pub struct WallFollowerSolver;
 
 impl WallFollowerSolver {
@@ -29,7 +29,7 @@ impl MazeSolver for WallFollowerSolver {
         let mut working = grid.clone();
         let mut came_from = HashMap::new();
         let mut current = start;
-        let mut dir = Direction::South; // initial direction
+        let mut dir = Direction::South; // 初始方向
 
         came_from.insert(start, None);
         working.set(start, Cell::Current).unwrap();
@@ -41,7 +41,7 @@ impl MazeSolver for WallFollowerSolver {
         while current != end && steps < max_steps {
             steps += 1;
 
-            // Try turning left first
+            // 优先尝试左转
             let left_dir = dir.counter_clockwise();
             let left = current.neighbor(left_dir);
             let can_go_left = left.is_some_and(|p| matches!(grid.get(p), Some(Cell::Passage)));
@@ -49,20 +49,20 @@ impl MazeSolver for WallFollowerSolver {
             if can_go_left {
                 dir = left_dir;
             } else {
-                // Try going straight
+                // 尝试直行
                 let straight = current.neighbor(dir);
                 let can_go_straight =
                     straight.is_some_and(|p| matches!(grid.get(p), Some(Cell::Passage)));
 
                 if !can_go_straight {
-                    // Turn right
+                    // 右转
                     dir = dir.clockwise();
                     let right = current.neighbor(dir);
                     let can_go_right =
                         right.is_some_and(|p| matches!(grid.get(p), Some(Cell::Passage)));
 
                     if !can_go_right {
-                        // Dead end, turn around
+                        // 死路，调头
                         dir = dir.clockwise();
                     }
                 }

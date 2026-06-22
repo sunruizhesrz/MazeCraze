@@ -1,4 +1,4 @@
-//! Export functionality for saving mazes to external formats.
+//! 迷宫导出功能，将迷宫保存为外部格式。
 
 pub mod text;
 
@@ -8,8 +8,8 @@ use crate::core::Grid;
 use std::error::Error;
 use std::path::Path;
 
-/// Export a grid to a file at the given path.
-/// The format is determined by the file extension.
+/// 将网格导出到指定路径的文件。
+/// 文件格式由文件扩展名决定。
 pub fn export_grid(grid: &Grid, path: &Path) -> Result<(), Box<dyn Error>> {
     let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("txt");
     match ext {

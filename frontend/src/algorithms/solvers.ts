@@ -2,6 +2,7 @@ import { Grid } from '../core/grid';
 import { Cell, type Point, type DirectionType, movePoint } from '../core/types';
 import type { Frame, AnimationResult } from './generators';
 
+// 求解过程的动画记录器
 class SolverRecorder {
   frames: Frame[] = [];
   private grid: Grid;
@@ -10,6 +11,7 @@ class SolverRecorder {
     this.grid = grid;
   }
 
+  // 记录当前网格状态为一帧
   record(message: string): void {
     this.frames.push({
       grid: this.grid.cellsArray,
@@ -19,6 +21,7 @@ class SolverRecorder {
   }
 }
 
+// 根据 parent 映射重建求解路径，并逐帧记录
 function reconstructPath(
   grid: Grid,
   parent: Map<string, { point: Point; dir: DirectionType } | null>,
@@ -37,11 +40,12 @@ function reconstructPath(
   recorder.record('Solution complete!');
 }
 
+// 曼哈顿距离启发式函数
 function heuristic(a: Point, b: Point): number {
   return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
 
-// ==================== BFS ====================
+// ==================== 广度优先搜索（BFS） ====================
 
 export function solveBFS(grid: Grid, start: Point, end: Point): AnimationResult {
   const working = grid.clone();
@@ -57,6 +61,7 @@ export function solveBFS(grid: Grid, start: Point, end: Point): AnimationResult 
   while (queue.length > 0) {
     const current = queue.shift()!;
 
+    // 找到终点
     if (current.x === end.x && current.y === end.y) {
       recorder.record('Exit found!');
       reconstructPath(working, parent, end, recorder);
@@ -91,7 +96,7 @@ export function solveBFS(grid: Grid, start: Point, end: Point): AnimationResult 
   };
 }
 
-// ==================== DFS ====================
+// ==================== 深度优先搜索（DFS） ====================
 
 export function solveDFS(grid: Grid, start: Point, end: Point): AnimationResult {
   const working = grid.clone();
@@ -107,6 +112,7 @@ export function solveDFS(grid: Grid, start: Point, end: Point): AnimationResult 
   while (stack.length > 0) {
     const current = stack.pop()!;
 
+    // 找到终点
     if (current.x === end.x && current.y === end.y) {
       recorder.record('Exit found!');
       reconstructPath(working, parent, end, recorder);
@@ -125,14 +131,16 @@ export function solveDFS(grid: Grid, start: Point, end: Point): AnimationResult 
         visited.add(nk);
         parent.set(nk, { point: current, dir: 0 as DirectionType });
         working.set(next, Cell.Current);
+        // 将当前点重新压栈，便于后续回溯
         stack.push(current);
         stack.push(next);
         recorder.record(`Exploring (${next.x}, ${next.y})`);
         foundNext = true;
-        break;
+        break; // DFS：立即深入
       }
     }
 
+    // 死路：标记为已访问，让栈弹回到父节点
     if (!foundNext) {
       working.set(current, Cell.Visited);
     }
@@ -147,14 +155,16 @@ export function solveDFS(grid: Grid, start: Point, end: Point): AnimationResult 
   };
 }
 
-// ==================== A* ====================
+// ==================== A* 搜索 ====================
 
 export function solveAStar(grid: Grid, start: Point, end: Point): AnimationResult {
   const working = grid.clone();
   const recorder = new SolverRecorder(working);
   recorder.record('Starting A* Search');
 
+  // 开放集：key -> f(n)
   const openSet = new Map<string, number>();
+  // g(n)：从起点到当前点的实际代价
   const gScore = new Map<string, number>();
   const parent = new Map<string, { point: Point; dir: DirectionType } | null>();
 
@@ -164,6 +174,7 @@ export function solveAStar(grid: Grid, start: Point, end: Point): AnimationResul
   parent.set(sKey, null);
 
   while (openSet.size > 0) {
+    // 从开放集中选取 f(n) 最小的节点
     let currentKey = '';
     let currentF = Infinity;
     let current: Point = { x: 0, y: 0 };
@@ -176,6 +187,7 @@ export function solveAStar(grid: Grid, start: Point, end: Point): AnimationResul
       }
     }
 
+    // 找到终点
     if (current.x === end.x && current.y === end.y) {
       recorder.record('Exit found!');
       reconstructPath(working, parent, end, recorder);
@@ -194,6 +206,7 @@ export function solveAStar(grid: Grid, start: Point, end: Point): AnimationResul
     for (const { point: next } of working.directNeighbors(current)) {
       const nk = `${next.x},${next.y}`;
       const tentativeG = (gScore.get(currentKey) ?? Infinity) + 1;
+      // 若发现更短路径则更新
       if (tentativeG < (gScore.get(nk) ?? Infinity)) {
         gScore.set(nk, tentativeG);
         const fScore = tentativeG + heuristic(next, end);
@@ -215,7 +228,7 @@ export function solveAStar(grid: Grid, start: Point, end: Point): AnimationResul
   };
 }
 
-// ==================== Wall Follower ====================
+// ==================== 沿墙行走（左手法则） ====================
 
 export function solveWallFollower(grid: Grid, start: Point, end: Point): AnimationResult {
   const working = grid.clone();
@@ -223,7 +236,7 @@ export function solveWallFollower(grid: Grid, start: Point, end: Point): Animati
   recorder.record('Starting Wall Follower (left-hand rule)');
 
   let current: Point = { ...start };
-  let dir: DirectionType = 2; // South
+  let dir: DirectionType = 2; // 初始方向：南
   const visited = new Set<string>();
   const maxSteps = grid.width * grid.height * 4;
   let steps = 0;
@@ -237,6 +250,7 @@ export function solveWallFollower(grid: Grid, start: Point, end: Point): Animati
       recorder.record(`Following wall at (${current.x}, ${current.y})`);
     }
 
+    // 找到终点
     if (current.x === end.x && current.y === end.y) {
       working.set(end, Cell.End);
       recorder.record('Exit found!');
@@ -248,6 +262,7 @@ export function solveWallFollower(grid: Grid, start: Point, end: Point): Animati
       };
     }
 
+    // 依次尝试左、前、右、后
     const leftDir = ((dir + 3) % 4) as DirectionType;
     const leftPoint = movePoint(current, leftDir);
     const forwardPoint = movePoint(current, dir);
@@ -292,6 +307,7 @@ export function solveWallFollower(grid: Grid, start: Point, end: Point): Animati
   };
 }
 
+// 求解器注册表
 export const SOLVERS: Record<string, (grid: Grid, start: Point, end: Point) => AnimationResult> = {
   bfs: solveBFS,
   dfs: solveDFS,
@@ -299,6 +315,7 @@ export const SOLVERS: Record<string, (grid: Grid, start: Point, end: Point) => A
   'wall-follower': solveWallFollower,
 };
 
+// 求解器的人类可读名称
 export const SOLVER_NAMES: Record<string, string> = {
   bfs: 'Breadth-First Search',
   dfs: 'Depth-First Search',

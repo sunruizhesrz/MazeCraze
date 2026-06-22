@@ -5,10 +5,9 @@ use crate::core::{Cell, Direction, Grid, Point};
 
 use super::MazeSolver;
 
-/// Depth-First Search maze solver.
+/// 深度优先搜索（DFS）迷宫求解器。
 ///
-/// Explores as deep as possible before backtracking. Does not guarantee
-/// the shortest path.
+/// 尽可能深入探索，直至无路可走才回溯。不保证找到最短路径。
 pub struct DfsSolver;
 
 impl DfsSolver {
@@ -50,19 +49,19 @@ impl MazeSolver for DfsSolver {
                     if let Some(Cell::Passage) = grid.get(next) {
                         visited.insert(next, Some((current, dir)));
                         working.set(next, Cell::Current).unwrap();
-                        // Push current back so we can backtrack if next is a dead end
+                        // 将当前点重新压栈，以便下一格是死路时可以回溯
                         stack.push(current);
                         stack.push(next);
                         recorder
                             .record(&working, format!("DFS: exploring ({}, {})", next.x, next.y));
                         found_next = true;
-                        break; // DFS: go deep immediately
+                        break; // DFS：立即深入
                     }
                 }
             }
 
             if !found_next {
-                // Dead end: mark as visited and let stack pop back to parent
+                // 死路：标记为已访问，让栈弹回到父节点
                 working.set(current, Cell::Visited).unwrap();
             }
         }

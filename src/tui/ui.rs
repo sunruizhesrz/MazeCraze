@@ -9,7 +9,7 @@ use ratatui::{
 use super::app::{App, AppState};
 use super::widgets::maze_canvas::MazeCanvas;
 
-/// Draw the UI based on the current application state.
+/// 根据当前应用状态绘制 UI。
 pub fn draw(f: &mut Frame, app: &App) {
     match app.state {
         AppState::Menu => draw_menu(f, app),
@@ -24,18 +24,18 @@ pub fn draw(f: &mut Frame, app: &App) {
 fn draw_menu(f: &mut Frame, app: &App) {
     let area = f.area();
 
-    // Main vertical layout: title / menu / footer
+    // 主纵向布局：标题 / 菜单 / 页脚
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .margin(2)
         .constraints([
-            Constraint::Length(4), // Title block
-            Constraint::Min(8),    // Menu
-            Constraint::Length(3), // Footer
+            Constraint::Length(4), // 标题块
+            Constraint::Min(8),    // 菜单
+            Constraint::Length(3), // 页脚
         ])
         .split(area);
 
-    // Title
+    // 标题
     let title_block = Block::default()
         .borders(Borders::ALL)
         .border_style(Style::default().fg(Color::Cyan))
@@ -57,7 +57,7 @@ fn draw_menu(f: &mut Frame, app: &App) {
     let inner = title_block.inner(chunks[0]);
     f.render_widget(title, inner);
 
-    // Menu items
+    // 菜单项
     let menu_block = Block::default()
         .borders(Borders::ALL)
         .border_style(Style::default().fg(Color::Yellow))
@@ -105,7 +105,7 @@ fn draw_menu(f: &mut Frame, app: &App) {
     let menu_inner = menu_block.inner(chunks[1]);
     f.render_widget(menu, menu_inner);
 
-    // Footer / status
+    // 页脚 / 状态
     let footer = Paragraph::new(app.message.as_str())
         .style(Style::default().fg(Color::Yellow))
         .alignment(Alignment::Center)
@@ -120,19 +120,19 @@ fn draw_menu(f: &mut Frame, app: &App) {
 fn draw_animation(f: &mut Frame, app: &App) {
     let area = f.area();
 
-    // Vertical split: maze on top (large), info bar on bottom
+    // 纵向分割：上方迷宫（大区域），下方信息栏
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Min(5),    // Maze area
-            Constraint::Length(7), // Info / controls
+            Constraint::Min(5),    // 迷宫区域
+            Constraint::Length(7), // 信息 / 控制区
         ])
         .split(area);
 
     let maze_area = chunks[0];
     let info_area = chunks[1];
 
-    // Maze display
+    // 迷宫显示
     let maze_title = if app.state == AppState::Generating {
         " Generating "
     } else {
@@ -158,13 +158,13 @@ fn draw_animation(f: &mut Frame, app: &App) {
         f.render_widget(empty, maze_inner);
     }
 
-    // Info panel: two-column layout
+    // 信息面板：双列布局
     let info_chunks = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
         .split(info_area);
 
-    // Left: playback stats
+    // 左侧：播放统计
     let stats_text = if let Some(ref player) = app.player {
         let pct = if player.total_frames() > 0 {
             (player.current_frame() * 100) / player.total_frames()
@@ -210,7 +210,7 @@ fn draw_animation(f: &mut Frame, app: &App) {
     );
     f.render_widget(stats, info_chunks[0]);
 
-    // Right: controls help
+    // 右侧：控制说明
     let controls_text = Text::from(vec![
         Line::from(vec![
             Span::styled("Space ", Style::default().fg(Color::Yellow)),
@@ -456,7 +456,7 @@ fn draw_help(f: &mut Frame) {
     f.render_widget(help, popup_area);
 }
 
-/// Create a centered rectangle with given percentage dimensions.
+/// 根据给定百分比尺寸创建居中的矩形区域。
 fn centered_rect(
     percent_x: u16,
     percent_y: u16,

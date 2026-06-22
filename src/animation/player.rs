@@ -1,17 +1,17 @@
 use super::AnimationRecorder;
 
-/// Playback speed multiplier.
+/// 播放速度倍率。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Speed {
     Slow,    // 0.5x
     Normal,  // 1x
     Fast,    // 2x
     Faster,  // 5x
-    Instant, // skip animation
+    Instant, // 跳过动画
 }
 
 impl Speed {
-    /// Duration per frame in milliseconds.
+    /// 每帧的持续时间（毫秒）。
     pub fn frame_duration_ms(&self) -> u64 {
         match self {
             Speed::Slow => 200,
@@ -22,7 +22,7 @@ impl Speed {
         }
     }
 
-    /// Cycle to the next speed.
+    /// 切换到下一档速度。
     pub fn next(&self) -> Self {
         match self {
             Speed::Slow => Speed::Normal,
@@ -34,7 +34,7 @@ impl Speed {
     }
 }
 
-/// Current playback state.
+/// 当前播放状态。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PlaybackState {
     Playing,
@@ -42,7 +42,7 @@ pub enum PlaybackState {
     Finished,
 }
 
-/// Plays back an animation recorder at a controlled speed.
+/// 以可控速度回放动画记录器。
 pub struct AnimationPlayer {
     recorder: AnimationRecorder,
     current_frame: usize,
@@ -51,7 +51,7 @@ pub struct AnimationPlayer {
 }
 
 impl AnimationPlayer {
-    /// Create a new player from a recorder.
+    /// 从记录器创建一个新的播放器。
     pub fn new(recorder: AnimationRecorder) -> Self {
         Self {
             recorder,
@@ -61,32 +61,32 @@ impl AnimationPlayer {
         }
     }
 
-    /// Current frame index.
+    /// 当前帧索引。
     pub fn current_frame(&self) -> usize {
         self.current_frame
     }
 
-    /// Total number of frames.
+    /// 总帧数。
     pub fn total_frames(&self) -> usize {
         self.recorder.total_steps()
     }
 
-    /// Current playback state.
+    /// 当前播放状态。
     pub fn state(&self) -> PlaybackState {
         self.state
     }
 
-    /// Current speed.
+    /// 当前速度。
     pub fn speed(&self) -> Speed {
         self.speed
     }
 
-    /// Set playback speed.
+    /// 设置播放速度。
     pub fn set_speed(&mut self, speed: Speed) {
         self.speed = speed;
     }
 
-    /// Toggle play/pause.
+    /// 切换播放/暂停。
     pub fn toggle_playback(&mut self) {
         self.state = match self.state {
             PlaybackState::Playing => PlaybackState::Paused,
@@ -98,7 +98,7 @@ impl AnimationPlayer {
         };
     }
 
-    /// Step forward by one frame (pauses if playing).
+    /// 向前一帧（若正在播放则暂停）。
     pub fn step_forward(&mut self) {
         self.state = PlaybackState::Paused;
         if self.current_frame + 1 < self.total_frames() {
@@ -108,7 +108,7 @@ impl AnimationPlayer {
         }
     }
 
-    /// Step backward by one frame (pauses if playing).
+    /// 向后一帧（若正在播放则暂停）。
     pub fn step_backward(&mut self) {
         self.state = PlaybackState::Paused;
         if self.current_frame > 0 {
@@ -116,20 +116,20 @@ impl AnimationPlayer {
         }
     }
 
-    /// Jump to the last frame.
+    /// 跳转到最后一帧。
     pub fn jump_to_end(&mut self) {
         self.current_frame = self.total_frames().saturating_sub(1);
         self.state = PlaybackState::Finished;
     }
 
-    /// Jump to the first frame.
+    /// 跳转到第一帧。
     pub fn jump_to_start(&mut self) {
         self.current_frame = 0;
         self.state = PlaybackState::Paused;
     }
 
-    /// Advance playback by one frame if currently playing.
-    /// Returns true if the frame changed.
+    /// 若正在播放，则推进一帧。
+    /// 返回 true 表示帧发生了变化。
     pub fn tick(&mut self) -> bool {
         if self.state != PlaybackState::Playing {
             return false;
@@ -143,12 +143,12 @@ impl AnimationPlayer {
         }
     }
 
-    /// Access the underlying frames.
+    /// 访问底层的帧序列。
     pub fn frames(&self) -> &[super::Frame] {
         self.recorder.frames()
     }
 
-    /// Check if the animation is finished.
+    /// 检查动画是否已结束。
     pub fn is_finished(&self) -> bool {
         self.state == PlaybackState::Finished
     }

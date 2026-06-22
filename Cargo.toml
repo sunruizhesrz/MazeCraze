@@ -8,23 +8,23 @@ license = "MIT"
 repository = "https://github.com/yourname/mazecraze"
 
 [dependencies]
-# TUI framework
+# TUI 框架
 ratatui = "0.29"
 crossterm = "0.28"
 
-# Command line parsing
+# 命令行解析
 clap = { version = "4", features = ["derive"] }
 
-# Serialization
+# 序列化
 serde = { version = "1", features = ["derive"] }
 
-# Random number generation
+# 随机数生成
 rand = "0.8"
 
-# Enhanced error handling
+# 增强错误处理
 thiserror = "1"
 
-# Terminal colors
+# 终端颜色
 ansi_term = "0.12"
 
 [dev-dependencies]

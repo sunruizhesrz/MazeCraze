@@ -52,13 +52,14 @@ export default function Controls({
 }: Props) {
   return (
     <div className="controls-panel">
+      {/* 挑战模式 */}
       <div className="control-group">
-        <h3>Challenge</h3>
-        <div className="difficulty-options" role="group" aria-label="Challenge difficulty">
+        <h3>挑战模式</h3>
+        <div className="difficulty-options" role="group" aria-label="挑战难度">
           {[
-            ['easy', 'Easy'],
-            ['normal', 'Normal'],
-            ['hard', 'Hard'],
+            ['easy', '简单'],
+            ['normal', '普通'],
+            ['hard', '困难'],
           ].map(([key, label]) => (
             <button
               key={key}
@@ -71,12 +72,13 @@ export default function Controls({
           ))}
         </div>
         <button className="btn-primary challenge-start" onClick={onStartChallenge}>
-          {isChallengeActive ? 'Restart Challenge' : 'Start Challenge'}
+          {isChallengeActive ? '重新挑战' : '开始挑战'}
         </button>
       </div>
 
+      {/* 生成器选择 */}
       <div className="control-group">
-        <h3>Generator</h3>
+        <h3>生成算法</h3>
         <select value={generator} onChange={(e) => onGeneratorChange(e.target.value)}>
           {Object.entries(GENERATOR_NAMES).map(([key, name]) => (
             <option key={key} value={key}>{name}</option>
@@ -84,8 +86,9 @@ export default function Controls({
         </select>
       </div>
 
+      {/* 求解器选择 */}
       <div className="control-group">
-        <h3>Solver</h3>
+        <h3>求解算法</h3>
         <select value={solver} onChange={(e) => onSolverChange(e.target.value)}>
           {Object.entries(SOLVER_NAMES).map(([key, name]) => (
             <option key={key} value={key}>{name}</option>
@@ -93,11 +96,12 @@ export default function Controls({
         </select>
       </div>
 
+      {/* 尺寸调节 */}
       <div className="control-group">
-        <h3>Size</h3>
+        <h3>迷宫尺寸</h3>
         <div className="size-inputs">
           <label>
-            W:
+            宽：
             <input
               type="range"
               min={5}
@@ -109,7 +113,7 @@ export default function Controls({
             <span>{width}</span>
           </label>
           <label>
-            H:
+            高：
             <input
               type="range"
               min={5}
@@ -123,20 +127,22 @@ export default function Controls({
         </div>
       </div>
 
+      {/* 操作按钮 */}
       <div className="control-group actions">
         <button className="btn-primary" onClick={onGenerate}>
-          Generate Maze
+          生成迷宫
         </button>
         <button className="btn-secondary" onClick={onSolve} disabled={!hasFrames}>
-          Solve Maze
+          求解迷宫
         </button>
         <button className="btn-danger" onClick={onReset}>
-          Reset
+          重置
         </button>
       </div>
 
+      {/* 播放控制 */}
       <div className="control-group playback">
-        <h3>Playback</h3>
+        <h3>播放控制</h3>
         <div className="playback-buttons">
           <button onClick={onStepBackward}>{'<<'}</button>
           <button className="play-btn" onClick={onPlayPause}>
@@ -145,7 +151,7 @@ export default function Controls({
           <button onClick={onStepForward}>{'>>'}</button>
         </div>
         <label className="speed-label">
-          Speed: {speed}x
+          速度：{speed}x
           <input
             type="range"
             min={1}

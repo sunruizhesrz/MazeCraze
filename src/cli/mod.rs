@@ -1,42 +1,42 @@
 use clap::Parser;
 
-/// Command-line arguments for MazeCraze.
+/// MazeCraze 的命令行参数。
 #[derive(Parser, Debug)]
 #[command(name = "mazecraze")]
 #[command(about = "A TUI interactive maze generator and solver")]
 #[command(version)]
 pub struct Cli {
-    /// Run in TUI mode (default if no other flags)
+    /// 以 TUI 模式运行（默认，当未指定其他标志时）
     #[arg(short, long)]
     pub tui: bool,
 
-    /// Maze generator algorithm
+    /// 迷宫生成算法
     #[arg(short, long, value_name = "ALGORITHM")]
     pub generate: Option<String>,
 
-    /// Maze solver algorithm
+    /// 迷宫求解算法
     #[arg(short, long, value_name = "ALGORITHM")]
     pub solve: Option<String>,
 
-    /// Maze dimensions (WIDTHxHEIGHT)
+    /// 迷宫尺寸（WIDTHxHEIGHT）
     #[arg(short = 'S', long, value_name = "DIMENSIONS", default_value = "21x11")]
     pub size: String,
 
-    /// Export the final maze to a file
+    /// 将最终迷宫导出到文件
     #[arg(short, long, value_name = "PATH")]
     pub export: Option<String>,
 
-    /// Loop rate (0.0-1.0) for non-perfect mazes
+    /// 用于生成非完美迷宫的环路率（0.0-1.0）
     #[arg(long, value_name = "RATE", default_value = "0.0")]
     pub loop_rate: f64,
 
-    /// Use ASCII renderer instead of Unicode
+    /// 使用 ASCII 渲染器替代 Unicode
     #[arg(long)]
     pub ascii: bool,
 }
 
 impl Cli {
-    /// Parse dimensions string like "21x11" into (width, height).
+    /// 将形如 "21x11" 的尺寸字符串解析为 (width, height)。
     pub fn parse_size(&self) -> Result<(usize, usize), String> {
         let parts: Vec<&str> = self.size.split('x').collect();
         if parts.len() != 2 {

@@ -7,7 +7,7 @@ use ratatui::{
 
 use crate::core::{Cell, Grid, Point};
 
-/// A widget that renders a maze grid directly into a ratatui buffer.
+/// 将迷宫网格直接渲染到 ratatui 缓冲区中的组件。
 pub struct MazeCanvas<'a> {
     grid: &'a Grid,
 }
@@ -33,7 +33,7 @@ impl<'a> Widget for MazeCanvas<'a> {
         let gw = self.grid.width() as u16;
         let gh = self.grid.height() as u16;
 
-        // Center the maze within the available area
+        // 在可用区域内居中迷宫
         let offset_x = area.x.saturating_add(area.width.saturating_sub(gw) / 2);
         let offset_y = area.y.saturating_add(area.height.saturating_sub(gh) / 2);
 

@@ -2,7 +2,7 @@ use mazecraze::core::Point;
 use mazecraze::generator::{all_generators, MazeGenerator};
 use mazecraze::solver::all_solvers;
 
-/// Integration test: every generator + solver combination should produce a valid solution.
+/// 集成测试：每一种"生成器 + 求解器"组合都应能得到一个有效解。
 #[test]
 fn test_all_generator_solver_combinations() {
     let generators = all_generators();
@@ -18,7 +18,7 @@ fn test_all_generator_solver_combinations() {
             let solve_recorder = solver.solve(&grid, start, end);
             let final_frame = solve_recorder.frames().last().unwrap();
 
-            // Scan entire grid for Path cells (passages() only returns Cell::Passage)
+            // 扫描整个网格寻找 Path 单元格（passages() 只返回 Cell::Passage）
             let has_path = (0..final_frame.grid.height()).any(|y| {
                 (0..final_frame.grid.width()).any(|x| {
                     matches!(
@@ -38,7 +38,7 @@ fn test_all_generator_solver_combinations() {
     }
 }
 
-/// Integration test: export functionality.
+/// 集成测试：导出功能。
 #[test]
 fn test_export_to_text() {
     use mazecraze::export::export_to_text;

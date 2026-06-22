@@ -1,7 +1,7 @@
-//! Terminal User Interface using `ratatui` and `crossterm`.
+//! 基于 `ratatui` 和 `crossterm` 的终端用户界面（TUI）。
 //!
-//! The TUI provides an interactive menu system for selecting algorithms,
-//! configuring parameters, and watching maze generation/solving animations.
+//! TUI 提供了一个交互式菜单系统，可用于选择算法、配置参数，
+//! 以及观看迷宫生成 / 求解的动画过程。
 
 pub mod app;
 pub mod events;
@@ -21,20 +21,20 @@ use ratatui::{
 };
 use std::{error::Error, io};
 
-/// Run the TUI application.
+/// 运行 TUI 应用。
 pub fn run_tui() -> Result<(), Box<dyn Error>> {
-    // Setup terminal
+    // 初始化终端
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    // Create app state
+    // 创建应用状态
     let mut app = App::new();
     let res = run_app(&mut terminal, &mut app);
 
-    // Restore terminal
+    // 恢复终端
     disable_raw_mode()?;
     execute!(
         terminal.backend_mut(),

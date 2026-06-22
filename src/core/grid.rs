@@ -2,39 +2,39 @@ use thiserror::Error;
 
 use super::{Direction, Point};
 
-/// A cell in the maze grid.
+/// 迷宫网格中的单元格。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Cell {
-    /// A wall cell.
+    /// 墙壁单元格。
     Wall,
-    /// A passable cell.
+    /// 可通行单元格。
     Passage,
-    /// A cell that has been visited during solving.
+    /// 求解过程中已访问的单元格。
     Visited,
-    /// Part of the final solution path.
+    /// 最终求解路径的一部分。
     Path,
-    /// The current active cell (for animation highlighting).
+    /// 当前活动单元格（用于动画高亮显示）。
     Current,
 }
 
-/// Errors that can occur when working with a grid.
+/// 网格操作过程中可能出现的错误。
 #[derive(Error, Debug, PartialEq)]
 pub enum GridError {
-    #[error("invalid grid dimensions: width ({0}) and height ({1}) must be odd and >= 3")]
+    #[error("无效的网格尺寸：宽度 ({0}) 和高度 ({1}) 必须为奇数且 >= 3")]
     InvalidDimensions(usize, usize),
-    #[error("point ({0}, {1}) is out of bounds")]
+    #[error("点 ({0}, {1}) 超出边界")]
     OutOfBounds(usize, usize),
-    #[error("point ({0}, {1}) is not a valid cell coordinate (must be odd indices)")]
+    #[error("点 ({0}, {1}) 不是有效的单元格坐标（必须为奇数索引）")]
     InvalidCellCoordinate(usize, usize),
 }
 
-/// The maze grid.
+/// 迷宫网格。
 ///
-/// The grid uses a "wall-and-passage" encoding where:
-/// - Odd indices (1, 3, 5...) are potential passages
-/// - Even indices (0, 2, 4...) are walls
+/// 网格采用"墙-通道"编码方式：
+/// - 奇数索引 (1, 3, 5...) 为潜在的通道
+/// - 偶数索引 (0, 2, 4...) 为墙壁
 ///
-///   This ensures a natural border and consistent wall thickness.
+///   这种编码方式可保证网格拥有自然的边界，且墙体厚度一致。
 #[derive(Clone, Debug, PartialEq)]
 pub struct Grid {
     width: usize,
@@ -43,9 +43,9 @@ pub struct Grid {
 }
 
 impl Grid {
-    /// Create a new grid filled entirely with walls.
+    /// 创建一个全部由墙壁填充的新网格。
     ///
-    /// Width and height must be odd and at least 3.
+    /// 宽度和高度必须为奇数且至少为 3。
     pub fn new(width: usize, height: usize) -> Result<Self, GridError> {
         if width < 3 || height < 3 || width.is_multiple_of(2) || height.is_multiple_of(2) {
             return Err(GridError::InvalidDimensions(width, height));
@@ -59,39 +59,39 @@ impl Grid {
         })
     }
 
-    /// Width of the grid.
+    /// 网格宽度。
     pub fn width(&self) -> usize {
         self.width
     }
 
-    /// Height of the grid.
+    /// 网格高度。
     pub fn height(&self) -> usize {
         self.height
     }
 
-    /// Get a cell at the given point.
+    /// 获取指定点处的单元格。
     pub fn get(&self, p: Point) -> Option<&Cell> {
         self.cells.get(p.y)?.get(p.x)
     }
 
-    /// Get a mutable reference to a cell.
+    /// 获取单元格的可变引用。
     pub fn get_mut(&mut self, p: Point) -> Option<&mut Cell> {
         self.cells.get_mut(p.y)?.get_mut(p.x)
     }
 
-    /// Set a cell value.
+    /// 设置单元格的值。
     pub fn set(&mut self, p: Point, cell: Cell) -> Result<(), GridError> {
         let c = self.get_mut(p).ok_or(GridError::OutOfBounds(p.x, p.y))?;
         *c = cell;
         Ok(())
     }
 
-    /// Check if a point is within bounds.
+    /// 检查点是否在边界内。
     pub fn contains(&self, p: Point) -> bool {
         p.x < self.width && p.y < self.height
     }
 
-    /// Get the valid passage neighbors of a cell (2 steps away, with wall in between).
+    /// 获取单元格的有效通道邻居（相距 2 格，中间有墙）。
     pub fn passage_neighbors(&self, p: Point) -> Vec<(Point, Direction)> {
         let mut neighbors = Vec::with_capacity(4);
         for dir in Direction::ALL {
@@ -104,12 +104,12 @@ impl Grid {
         neighbors
     }
 
-    /// Get the cell between two passage cells.
+    /// 获取两个通道单元格之间的单元格（即墙壁位置）。
     pub fn wall_between(&self, a: Point, dir: Direction) -> Option<Point> {
         a.moved(dir, 1).filter(|p| self.contains(*p))
     }
 
-    /// Carve a passage from `from` in direction `dir`, turning both the wall and target into passages.
+    /// 从 `from` 沿 `dir` 方向开凿通道，将中间的墙和目标单元格同时变为通道。
     pub fn carve_passage(&mut self, from: Point, dir: Direction) -> Result<Point, GridError> {
         let wall = self
             .wall_between(from, dir)
@@ -123,7 +123,7 @@ impl Grid {
         Ok(to)
     }
 
-    /// Check if a passage exists between two adjacent passage cells.
+    /// 检查两个相邻通道单元格之间是否存在通道。
     pub fn is_connected(&self, a: Point, b: Point) -> bool {
         let dx = a.x.abs_diff(b.x);
         let dy = a.y.abs_diff(b.y);
@@ -136,7 +136,7 @@ impl Grid {
         matches!(self.get(mid), Some(Cell::Passage))
     }
 
-    /// Return all passage cell coordinates.
+    /// 返回所有通道单元格的坐标。
     pub fn passages(&self) -> Vec<Point> {
         let mut result = Vec::new();
         for y in (1..self.height).step_by(2) {
@@ -149,7 +149,7 @@ impl Grid {
         result
     }
 
-    /// Reset all non-wall cells to Wall (preserving only the physical walls).
+    /// 将所有非墙单元格重置为墙（仅保留物理墙体）。
     pub fn reset_to_walls(&mut self) {
         for row in &mut self.cells {
             for cell in row {
@@ -158,7 +158,7 @@ impl Grid {
         }
     }
 
-    /// Clear visualization markers (Visited, Path, Current) back to Passage.
+    /// 清除可视化标记（Visited、Path、Current），将它们还原为 Passage。
     pub fn clear_markers(&mut self) {
         for row in &mut self.cells {
             for cell in row.iter_mut() {

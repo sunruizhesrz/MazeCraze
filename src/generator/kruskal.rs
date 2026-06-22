@@ -5,7 +5,7 @@ use crate::core::{Cell, Point};
 
 use super::{init_grid, MazeGenerator};
 
-/// Union-Find (Disjoint Set Union) data structure for Kruskal's algorithm.
+/// 并查集（Disjoint Set Union）数据结构，用于 Kruskal 算法。
 struct UnionFind {
     parent: Vec<usize>,
     rank: Vec<usize>,
@@ -44,11 +44,10 @@ impl UnionFind {
     }
 }
 
-/// Randomized Kruskal's algorithm maze generator.
+/// 随机化 Kruskal 算法迷宫生成器。
 ///
-/// Treats the maze as a graph and finds a spanning tree by randomly selecting
-/// walls to remove, using union-find to avoid cycles. Produces a very uniform
-/// distribution of corridors.
+/// 将迷宫视为图，通过随机选择要移除的墙并使用并查集避免环路，构造出一棵生成树。
+/// 生成的迷宫走廊分布非常均匀。
 pub struct RandomizedKruskal;
 
 impl RandomizedKruskal {
@@ -69,9 +68,9 @@ impl MazeGenerator for RandomizedKruskal {
         let (mut grid, _start) = init_grid(width, height);
         let mut rng = rand::thread_rng();
 
-        // Collect all passage cells and all walls between them
+        // 收集所有通道单元格以及它们之间的墙
         let mut passages: Vec<Point> = Vec::new();
-        let mut walls: Vec<(Point, Point, Point)> = Vec::new(); // (wall, cell_a, cell_b)
+        let mut walls: Vec<(Point, Point, Point)> = Vec::new(); // (墙, 单元格 a, 单元格 b)
 
         for y in (1..height).step_by(2) {
             for x in (1..width).step_by(2) {
@@ -79,13 +78,13 @@ impl MazeGenerator for RandomizedKruskal {
                 grid.set(p, Cell::Passage).unwrap();
                 passages.push(p);
 
-                // East neighbor
+                // 东侧邻居
                 if x + 2 < width {
                     let wall = Point::new(x + 1, y);
                     let neighbor = Point::new(x + 2, y);
                     walls.push((wall, p, neighbor));
                 }
-                // South neighbor
+                // 南侧邻居
                 if y + 2 < height {
                     let wall = Point::new(x, y + 1);
                     let neighbor = Point::new(x, y + 2);

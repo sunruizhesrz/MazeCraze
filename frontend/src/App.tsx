@@ -9,9 +9,11 @@ import Controls from './components/Controls';
 import Stats from './components/Stats';
 import './App.css';
 
+// 默认参数
 const DEFAULT_WIDTH = 21;
 const DEFAULT_HEIGHT = 21;
 const DEFAULT_CELL_SIZE = 14;
+// 本地最佳记录在 localStorage 中的键名
 const RECORDS_KEY = 'mazecraze.challenge.records';
 
 type AppMode = 'idle' | 'generate' | 'solve' | 'challenge';
@@ -34,23 +36,27 @@ const DIFFICULTIES: Record<DifficultyKey, DifficultyConfig> = {
   hard: { label: 'Hard', width: 31, height: 19 },
 };
 
+// 生成一个全部由墙填充的空网格
 function emptyGrid(width: number, height: number): number[][] {
   return Array.from({ length: height }, () =>
     Array.from({ length: width }, () => Cell.Wall)
   );
 }
 
+// 将毫秒数格式化为 "秒.毫秒s" 形式
 function formatDuration(ms: number): string {
   const seconds = Math.floor(ms / 1000);
   const millis = Math.floor(ms % 1000);
   return `${seconds}.${millis.toString().padStart(3, '0')}s`;
 }
 
+// 格式化最佳记录显示
 function formatRecord(record: BestRecord | null): string {
   if (!record) return 'No record yet';
   return `${formatDuration(record.elapsedMs)}, ${record.steps} steps`;
 }
 
+// 从 localStorage 加载历史最佳记录
 function loadRecords(): Record<string, BestRecord> {
   try {
     const raw = localStorage.getItem(RECORDS_KEY);
@@ -74,7 +80,7 @@ function App() {
   const [currentGrid, setCurrentGrid] = useState<number[][]>(
     emptyGrid(DEFAULT_WIDTH, DEFAULT_HEIGHT)
   );
-  const [message, setMessage] = useState('Welcome to MazeCraze! Click "Generate Maze" to start.');
+  const [message, setMessage] = useState('欢迎使用 MazeCraze！点击"生成迷宫"开始。');
   const [algorithmName, setAlgorithmName] = useState('');
   const [player, setPlayer] = useState<Point>({ x: 1, y: 1 });
   const [challengeSteps, setChallengeSteps] = useState(0);
@@ -83,6 +89,7 @@ function App() {
   const [challengeFinished, setChallengeFinished] = useState(false);
   const [records, setRecords] = useState<Record<string, BestRecord>>(() => loadRecords());
 
+  // 动画与计时器引用
   const animRef = useRef<number | null>(null);
   const animateRef = useRef<(timestamp: number) => void>(() => undefined);
   const lastTimeRef = useRef<number>(0);
@@ -91,6 +98,7 @@ function App() {
   const recordKey = `${difficulty}|${width}x${height}|${generator}`;
   const bestRecord = records[recordKey] ?? null;
 
+  // 停止当前动画
   const stopAnimation = useCallback(() => {
     setIsPlaying(false);
     if (animRef.current !== null) {
@@ -99,6 +107,7 @@ function App() {
     }
   }, []);
 
+  // 逐帧推进的动画回调
   const animate = useCallback(
     (timestamp: number) => {
       if (!isPlaying) return;
@@ -143,6 +152,7 @@ function App() {
     };
   }, [isPlaying, animate]);
 
+  // 挑战模式计时器
   useEffect(() => {
     if (mode !== 'challenge' || challengeFinished || challengeStart === null) {
       if (timerRef.current !== null) {
@@ -164,6 +174,7 @@ function App() {
     };
   }, [mode, challengeFinished, challengeStart]);
 
+  // 切换难度
   const handleDifficultyChange = useCallback((next: string) => {
     const key = next as DifficultyKey;
     const config = DIFFICULTIES[key];
@@ -175,6 +186,7 @@ function App() {
     setMessage(`${config.label} difficulty selected.`);
   }, [stopAnimation]);
 
+  // 标记挑战网格上的起点、终点和玩家位置
   const markChallengeGrid = useCallback((grid: Grid, nextPlayer: Point): number[][] => {
     grid.clearMarkers();
     const start = { x: 1, y: 1 };
@@ -185,6 +197,7 @@ function App() {
     return grid.cellsArray;
   }, []);
 
+  // 生成迷宫
   const handleGenerate = useCallback(() => {
     stopAnimation();
     const w = width % 2 === 0 ? width + 1 : width;
@@ -209,6 +222,7 @@ function App() {
     setMode('idle');
   }, [generator, width, height, stopAnimation]);
 
+  // 求解迷宫
   const handleSolve = useCallback(() => {
     if (frames.length === 0) return;
 
@@ -239,11 +253,13 @@ function App() {
     setMode('idle');
   }, [frames, solver, stopAnimation]);
 
+  // 播放 / 暂停切换
   const handlePlayPause = useCallback(() => {
     if (frames.length === 0) return;
     setIsPlaying((prev) => !prev);
   }, [frames]);
 
+  // 单步前进
   const handleStepForward = useCallback(() => {
     stopAnimation();
     setCurrentFrame((prev) => {
@@ -257,6 +273,7 @@ function App() {
     });
   }, [frames, stopAnimation]);
 
+  // 单步后退
   const handleStepBackward = useCallback(() => {
     stopAnimation();
     setCurrentFrame((prev) => {
@@ -270,12 +287,13 @@ function App() {
     });
   }, [frames, stopAnimation]);
 
+  // 重置应用状态
   const handleReset = useCallback(() => {
     stopAnimation();
     setFrames([]);
     setCurrentFrame(0);
     setCurrentGrid(emptyGrid(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-    setMessage('Welcome to MazeCraze! Click "Generate Maze" to start.');
+    setMessage('欢迎使用 MazeCraze！点击"生成迷宫"开始。');
     setAlgorithmName('');
     setMode('idle');
     setChallengeStart(null);
@@ -285,6 +303,7 @@ function App() {
     setPlayer({ x: 1, y: 1 });
   }, [stopAnimation]);
 
+  // 开始挑战模式
   const handleStartChallenge = useCallback(() => {
     stopAnimation();
     const config = DIFFICULTIES[difficulty];
@@ -312,6 +331,7 @@ function App() {
     setMessage(`Challenge started. Reach the red exit.`);
   }, [difficulty, generator, markChallengeGrid, stopAnimation]);
 
+  // 完成挑战并尝试更新最佳记录
   const finishChallenge = useCallback((elapsedMs: number, steps: number) => {
     setChallengeFinished(true);
     setChallengeStart(null);
@@ -333,6 +353,7 @@ function App() {
     setMessage('Finished! Best record updated if this run was faster.');
   }, [recordKey]);
 
+  // 在挑战模式下移动玩家
   const movePlayer = useCallback((direction: DirectionType) => {
     if (mode !== 'challenge' || challengeFinished) return;
     const grid = Grid.fromArray(currentGrid);
@@ -351,6 +372,7 @@ function App() {
     setPlayer(next);
     setChallengeSteps(nextSteps);
 
+    // 玩家到达终点
     if (next.x === end.x && next.y === end.y) {
       const elapsed = challengeStart === null ? challengeElapsed : performance.now() - challengeStart;
       setCurrentGrid(markChallengeGrid(grid, next));
@@ -372,6 +394,7 @@ function App() {
     player,
   ]);
 
+  // 监听全局键盘事件，仅在挑战模式下生效
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const keyMap: Record<string, DirectionType> = {
@@ -397,6 +420,7 @@ function App() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [mode, movePlayer]);
 
+  // 根据迷宫尺寸自适应单元格大小
   const cellSize = Math.max(4, Math.min(DEFAULT_CELL_SIZE, Math.floor(600 / Math.max(width, height))));
 
   return (
@@ -471,7 +495,7 @@ function App() {
 
       <footer className="app-footer">
         <p>
-          Rust Core + React Frontend | 3 Generators | 4 Solvers | Built with Vite
+          Rust 核心 + React 前端 | 3 种生成算法 | 4 种求解算法 | 使用 Vite 构建
         </p>
       </footer>
     </div>

@@ -9,7 +9,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-/// Top-level application state machine.
+/// 顶层应用状态机。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum AppState {
     Menu,
@@ -21,10 +21,10 @@ pub enum AppState {
     Quit,
 }
 
-/// Number of selectable menu items.
+/// 可选菜单项的数量。
 pub const MENU_ITEM_COUNT: usize = 6;
 
-/// Preset challenge difficulties.
+/// 预设的挑战难度。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Difficulty {
     Easy,
@@ -52,7 +52,7 @@ impl Difficulty {
     }
 }
 
-/// A best local challenge result.
+/// 一条本地最佳挑战记录。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct BestRecord {
     pub elapsed_millis: u128,
@@ -66,7 +66,7 @@ impl BestRecord {
     }
 }
 
-/// Dependency-free local best-record storage.
+/// 无第三方依赖的本地最佳记录存储。
 #[derive(Clone, Debug, Default)]
 pub struct LocalRecords {
     entries: Vec<(String, BestRecord)>,
@@ -144,7 +144,7 @@ impl LocalRecords {
     }
 }
 
-/// Main application state.
+/// 主应用状态。
 pub struct App {
     pub state: AppState,
     pub selected_menu_item: usize,

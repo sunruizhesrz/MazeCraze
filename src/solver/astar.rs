@@ -6,17 +6,17 @@ use crate::core::{Cell, Direction, Grid, Point};
 
 use super::MazeSolver;
 
-/// A* search node for the priority queue.
+/// 优先队列中使用的 A* 搜索节点。
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct Node {
     point: Point,
-    cost: usize,     // g(n): cost from start
+    cost: usize,     // g(n)：从起点到当前点的代价
     priority: usize, // f(n) = g(n) + h(n)
 }
 
 impl Ord for Node {
     fn cmp(&self, other: &Self) -> Ordering {
-        other.priority.cmp(&self.priority) // min-heap by priority
+        other.priority.cmp(&self.priority) // 按 priority 构造小顶堆
     }
 }
 
@@ -26,10 +26,10 @@ impl PartialOrd for Node {
     }
 }
 
-/// A* maze solver.
+/// A* 迷宫求解器。
 ///
-/// Uses Manhattan distance as the heuristic. Guarantees the shortest path
-/// and typically explores fewer cells than BFS.
+/// 使用曼哈顿距离作为启发式函数。可保证找到最短路径，
+/// 且通常比 BFS 探索更少的单元格。
 pub struct AStarSolver;
 
 impl AStarSolver {

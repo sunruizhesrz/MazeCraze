@@ -6,17 +6,18 @@ interface Props {
   cellSize?: number;
 }
 
-// High-diversity color scheme: each cell type has distinct hue and brightness
+// 高区分度配色：每种单元格类型都有独特的色相与亮度
 const CELL_COLORS: Record<number, string> = {
-  [Cell.Wall]: '#000000',      // pure black - invisible
-  [Cell.Passage]: '#FFFFFF',   // pure white - clear open space
-  [Cell.Visited]: '#FF8C00',   // dark orange - searched area
-  [Cell.Current]: '#FF00FF',   // magenta - active cursor
-  [Cell.Path]: '#00FF00',      // bright green - final solution
-  [Cell.Start]: '#00FFFF',     // cyan - entrance
-  [Cell.End]: '#FF0000',       // pure red - exit
+  [Cell.Wall]: '#000000',      // 纯黑 - 墙
+  [Cell.Passage]: '#FFFFFF',   // 纯白 - 通道
+  [Cell.Visited]: '#FF8C00',   // 深橙 - 已搜索
+  [Cell.Current]: '#FF00FF',   // 品红 - 当前位置
+  [Cell.Path]: '#00FF00',      // 亮绿 - 最终路径
+  [Cell.Start]: '#00FFFF',     // 青色 - 起点
+  [Cell.End]: '#FF0000',       // 纯红 - 终点
 };
 
+// 需要发光效果的单元格类型
 const GLOW_CELLS: Set<number> = new Set([Cell.Path, Cell.Start, Cell.End, Cell.Current]);
 
 export default function MazeCanvas({ grid, cellSize = 12 }: Props) {
@@ -28,7 +29,7 @@ export default function MazeCanvas({ grid, cellSize = 12 }: Props) {
 
     const height = grid.length;
     const width = grid[0]?.length ?? 0;
-    const gap = 1; // 1px gap between cells for definition
+    const gap = 1; // 单元格间留 1px 间隙以增强边界感
     const drawSize = Math.max(1, cellSize - gap);
 
     canvas.width = width * cellSize;
@@ -37,7 +38,7 @@ export default function MazeCanvas({ grid, cellSize = 12 }: Props) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Clear background (very dark)
+    // 清除背景（极深色）
     ctx.fillStyle = '#050508';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -49,7 +50,7 @@ export default function MazeCanvas({ grid, cellSize = 12 }: Props) {
         const cy = y * cellSize;
 
         if (GLOW_CELLS.has(cell)) {
-          // Glow effect for special cells
+          // 特殊单元格的发光效果
           ctx.save();
           ctx.shadowColor = color;
           ctx.shadowBlur = cellSize * 1.5;
@@ -57,7 +58,7 @@ export default function MazeCanvas({ grid, cellSize = 12 }: Props) {
           ctx.fillRect(cx, cy, drawSize, drawSize);
           ctx.restore();
 
-          // Bright inner border
+          // 明亮的内边框
           ctx.strokeStyle = 'rgba(255,255,255,0.7)';
           ctx.lineWidth = 0.8;
           ctx.strokeRect(cx + 0.5, cy + 0.5, drawSize - 1, drawSize - 1);
@@ -65,7 +66,7 @@ export default function MazeCanvas({ grid, cellSize = 12 }: Props) {
           ctx.fillStyle = color;
           ctx.fillRect(cx, cy, drawSize, drawSize);
 
-          // Subtle border for non-wall passages to define edges
+          // 为非墙通道添加细微边框，强化边缘
           if (cell !== Cell.Wall) {
             ctx.strokeStyle = 'rgba(255,255,255,0.08)';
             ctx.lineWidth = 0.5;

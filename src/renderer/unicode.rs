@@ -2,10 +2,9 @@ use crate::core::{Cell, Grid, Point};
 
 use super::Renderer;
 
-/// Unicode Box Drawing renderer.
+/// Unicode 制表符渲染器。
 ///
-/// Produces aesthetically pleasing output using Unicode box-drawing characters
-/// and ANSI color codes.
+/// 使用 Unicode 制表符和 ANSI 颜色代码，生成更具美感的结果。
 pub struct UnicodeRenderer {
     use_color: bool,
 }
@@ -25,7 +24,7 @@ impl UnicodeRenderer {
         let cell = grid.get(p);
 
         if x.is_multiple_of(2) && y.is_multiple_of(2) {
-            // Intersection
+            // 交叉点
             return self.styled("┼", "intersection");
         }
 

@@ -8,7 +8,7 @@ use ratatui::{
 
 use crate::animation::{AnimationPlayer, PlaybackState};
 
-/// Info panel showing animation metadata and controls.
+/// 显示动画元数据和控件的信息面板。
 pub struct InfoPanel<'a> {
     player: &'a AnimationPlayer,
     message: &'a str,

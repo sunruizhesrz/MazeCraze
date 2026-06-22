@@ -29,7 +29,7 @@ fn run(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
 fn run_cli_mode(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
     let (width, height) = cli.parse_size()?;
 
-    // Generate maze
+    // 生成迷宫
     let grid = if let Some(gen_name) = &cli.generate {
         let generator =
             find_generator(gen_name).ok_or_else(|| format!("Unknown generator: {}", gen_name))?;
@@ -43,7 +43,7 @@ fn run_cli_mode(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
         recorder.frames().last().unwrap().grid.clone()
     };
 
-    // Solve maze
+    // 求解迷宫
     let solved_grid = if let Some(solver_name) = &cli.solve {
         let solver =
             find_solver(solver_name).ok_or_else(|| format!("Unknown solver: {}", solver_name))?;
@@ -57,7 +57,7 @@ fn run_cli_mode(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
         grid
     };
 
-    // Render and print
+    // 渲染并打印
     let renderer: Box<dyn Renderer> = if cli.ascii {
         Box::new(AsciiRenderer::new())
     } else {
@@ -65,7 +65,7 @@ fn run_cli_mode(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
     };
     println!("\n{}", renderer.render(&solved_grid));
 
-    // Export if requested
+    // 如有需要则导出
     if let Some(export_path) = &cli.export {
         mazecraze::export::export_grid(&solved_grid, Path::new(export_path))?;
         println!("Maze exported to: {}", export_path);

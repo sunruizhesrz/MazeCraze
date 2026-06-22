@@ -4,7 +4,7 @@ use mazecraze::core::{Cell, Grid, Point};
 use mazecraze::generator::MazeGenerator;
 use mazecraze::generator::{RandomizedKruskal, RandomizedPrim, RecursiveBacktracker};
 
-/// Check that all passage cells are reachable from the entrance using BFS.
+/// 使用 BFS 检查所有通道单元格是否都能从入口到达。
 fn is_fully_connected(grid: &Grid) -> bool {
     let mut visited = vec![vec![false; grid.width()]; grid.height()];
     let mut queue = VecDeque::new();
@@ -22,21 +22,21 @@ fn is_fully_connected(grid: &Grid) -> bool {
         }
     }
 
-    // Count reachable passages
+    // 统计可达通道数
     let reachable = grid.passages().iter().filter(|p| visited[p.y][p.x]).count();
     reachable == grid.passages().len()
 }
 
-/// Check that a maze is perfect (no loops).
-/// In a perfect maze:
-/// - all passage cells are present (passages == cells)
-/// - all passages are connected
-/// - number of carved walls == cells - 1 (spanning tree property, no loops)
+/// 检查迷宫是否为完美迷宫（无环路）。
+/// 完美迷宫满足：
+/// - 所有通道单元格均存在（通道数 == 单元格数）
+/// - 所有通道相互连通
+/// - 已开凿的墙数 == 单元格数 - 1（生成树性质，无环路）
 fn is_perfect_maze(grid: &Grid) -> bool {
     let cells = ((grid.width() - 1) / 2) * ((grid.height() - 1) / 2);
     let passages = grid.passages().len();
 
-    // Count carved walls (horizontal walls at even y, odd x; vertical walls at odd y, even x)
+    // 统计已开凿的墙（偶数 y、奇数 x 处的水平墙；奇数 y、偶数 x 处的垂直墙）
     let mut carved_walls = 0usize;
     for y in (2..grid.height() - 1).step_by(2) {
         for x in 1..grid.width() - 1 {
@@ -88,8 +88,8 @@ fn test_kruskal_generates_valid_maze() {
 
 #[test]
 fn test_generators_produce_different_mazes() {
-    // Very basic check: two runs with different algorithms should
-    // produce different wall patterns (with high probability).
+    // 基础检查：用两种不同算法运行两次，应当
+    // 生成不同的墙体结构（概率上几乎必然不同）。
     use mazecraze::renderer::{AsciiRenderer, Renderer};
 
     let backtracker = RecursiveBacktracker::new();
@@ -105,7 +105,7 @@ fn test_generators_produce_different_mazes() {
     let bt_rendered = renderer.render(bt_grid);
     let prim_rendered = renderer.render(prim_grid);
 
-    // They should be structurally different (not identical)
+    // 它们应当在结构上不同（不雷同）
     assert_ne!(
         bt_rendered, prim_rendered,
         "Two different algorithms produced identical mazes (unlikely but possible)"

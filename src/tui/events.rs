@@ -4,13 +4,13 @@ use crate::core::Direction;
 
 use super::app::{App, AppState};
 
-/// Commands that the event handler can return.
+/// 事件处理器可返回的命令。
 pub enum Command {
     Quit,
     Continue,
 }
 
-/// Handle keyboard input based on current application state.
+/// 根据当前应用状态处理键盘输入。
 pub fn handle_key(app: &mut App, key: KeyCode) -> Command {
     match app.state {
         AppState::Menu => handle_menu_keys(app, key),

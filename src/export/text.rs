@@ -5,7 +5,7 @@ use std::path::Path;
 use crate::core::Grid;
 use crate::renderer::{Renderer, UnicodeRenderer};
 
-/// Export a maze grid to a plain text file using the Unicode renderer.
+/// 使用 Unicode 渲染器将迷宫网格导出为纯文本文件。
 pub fn export_to_text(grid: &Grid, path: &Path) -> Result<(), Box<dyn std::error::Error>> {
     let renderer = UnicodeRenderer::new().with_color(false);
     let rendered = renderer.render(grid);

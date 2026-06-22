@@ -5,10 +5,10 @@ use crate::core::{Grid, Point};
 
 use super::{init_grid, MazeGenerator};
 
-/// Recursive Backtracker maze generator (a randomized depth-first search).
+/// 递归回溯迷宫生成器（随机化深度优先搜索）。
 ///
-/// This algorithm creates long, winding corridors with fewer dead ends.
-/// It is the simplest and most common maze generation algorithm.
+/// 该算法生成的迷宫具有长而蜿蜒的走廊，且死路较少。
+/// 它是最简单、最常见的迷宫生成算法。
 pub struct RecursiveBacktracker;
 
 impl RecursiveBacktracker {

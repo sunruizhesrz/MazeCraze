@@ -5,9 +5,9 @@ use crate::core::{Cell, Direction, Grid, Point};
 
 use super::MazeSolver;
 
-/// Breadth-First Search maze solver.
+/// 广度优先搜索（BFS）迷宫求解器。
 ///
-/// Guarantees the shortest path in an unweighted grid.
+/// 在无权网格中可保证找到最短路径。
 pub struct BfsSolver;
 
 impl BfsSolver {

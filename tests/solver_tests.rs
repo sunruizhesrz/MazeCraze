@@ -2,11 +2,11 @@ use mazecraze::core::{Cell, Point};
 use mazecraze::generator::{MazeGenerator, RecursiveBacktracker};
 use mazecraze::solver::{AStarSolver, BfsSolver, DfsSolver, MazeSolver, WallFollowerSolver};
 
-/// Create a simple 5x5 maze for deterministic tests.
+/// 创建一个 5x5 的简单迷宫，用于确定性测试。
 fn make_simple_maze() -> mazecraze::core::Grid {
     use mazecraze::core::Grid;
     let mut grid = Grid::new(5, 5).unwrap();
-    // Create a simple path: (1,1) → (3,1) → (3,3)
+    // 创建一条简单路径：(1,1) → (3,1) → (3,3)
     grid.set(Point::new(1, 1), Cell::Passage).unwrap();
     grid.set(Point::new(2, 1), Cell::Passage).unwrap();
     grid.set(Point::new(3, 1), Cell::Passage).unwrap();
@@ -15,7 +15,7 @@ fn make_simple_maze() -> mazecraze::core::Grid {
     grid
 }
 
-/// Count Path cells in the entire grid.
+/// 统计整个网格中 Path 单元格的数量。
 fn count_path_cells(grid: &mazecraze::core::Grid) -> usize {
     (0..grid.height())
         .flat_map(|y| (0..grid.width()).map(move |x| Point::new(x, y)))
@@ -28,14 +28,14 @@ fn is_valid_path(grid: &mazecraze::core::Grid, path: &[Point]) -> bool {
     if path.is_empty() {
         return false;
     }
-    // Check start and end
+    // 检查起点和终点
     if path[0] != Point::new(1, 1) {
         return false;
     }
     if *path.last().unwrap() != Point::new(3, 3) {
         return false;
     }
-    // Check consecutive points are adjacent and passable
+    // 检查相邻点是否相邻且可通行
     for window in path.windows(2) {
         let a = window[0];
         let b = window[1];
@@ -82,7 +82,7 @@ fn test_astar_finds_shortest_path() {
     let final_frame = recorder.frames().last().unwrap();
     let path_count = count_path_cells(&final_frame.grid);
 
-    // Shortest path in this simple maze is 5 cells: (1,1) (2,1) (3,1) (3,2) (3,3)
+    // 在此简单迷宫中，最短路径为 5 个单元格：(1,1) (2,1) (3,1) (3,2) (3,3)
     assert_eq!(path_count, 5, "A* should find the shortest path");
 }
 

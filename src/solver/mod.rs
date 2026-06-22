@@ -1,8 +1,7 @@
-//! Maze solving algorithms.
+//! 迷宫求解算法。
 //!
-//! All solvers implement the [`MazeSolver`] trait. They operate on an existing
-//! [`Grid`] and produce an [`AnimationRecorder`] capturing the exploration and
-//! solution process.
+//! 所有求解器都实现了 [`MazeSolver`] trait。它们在已存在的 [`Grid`] 上运行，
+//! 并产出 [`AnimationRecorder`]，记录探索和求解过程。
 
 use crate::animation::AnimationRecorder;
 use crate::core::{Grid, Point};
@@ -18,19 +17,19 @@ pub use bfs::BfsSolver;
 pub use dfs::DfsSolver;
 pub use wall_follower::WallFollowerSolver;
 
-/// A maze solver finds a path from start to end in an existing maze.
+/// 迷宫求解器在已有迷宫中寻找从起点到终点的路径。
 pub trait MazeSolver: Send + Sync {
-    /// Solve the maze, recording every step.
+    /// 求解迷宫，并记录每一步。
     fn solve(&self, grid: &Grid, start: Point, end: Point) -> AnimationRecorder;
 
-    /// Human-readable name of the algorithm.
+    /// 算法的人类可读名称。
     fn name(&self) -> &'static str;
 
-    /// Short description.
+    /// 算法的简短描述。
     fn description(&self) -> &'static str;
 }
 
-/// Registry of all available solvers.
+/// 所有可用求解器的注册表。
 pub fn all_solvers() -> Vec<Box<dyn MazeSolver>> {
     vec![
         Box::new(BfsSolver::new()),
@@ -40,10 +39,10 @@ pub fn all_solvers() -> Vec<Box<dyn MazeSolver>> {
     ]
 }
 
-/// Find a solver by its name (case-insensitive, supports partial match and abbreviations).
+/// 按名称查找求解器（大小写不敏感，支持部分匹配和缩写）。
 pub fn find_solver(name: &str) -> Option<Box<dyn MazeSolver>> {
     let name_lower = name.to_lowercase();
-    // Map common abbreviations to full names
+    // 将常见缩写映射到全称
     let search_term = match name_lower.as_str() {
         "bfs" => "breadth-first",
         "dfs" => "depth-first",

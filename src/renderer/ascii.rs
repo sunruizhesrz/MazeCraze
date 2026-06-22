@@ -2,9 +2,9 @@ use crate::core::{Cell, Grid, Point};
 
 use super::Renderer;
 
-/// ASCII renderer for maximum terminal compatibility.
+/// ASCII 渲染器，追求最大的终端兼容性。
 ///
-/// Uses only basic ASCII characters: `+`, `-`, `|`, ` `.
+/// 仅使用基础 ASCII 字符：`+`、`-`、`|`、` `。
 pub struct AsciiRenderer;
 
 impl AsciiRenderer {

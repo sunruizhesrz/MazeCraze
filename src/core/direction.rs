@@ -1,6 +1,6 @@
 use rand::Rng;
 
-/// The four cardinal directions.
+/// 四个基本方向（北、南、西、东）。
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Direction {
     North,
@@ -10,10 +10,10 @@ pub enum Direction {
 }
 
 impl Direction {
-    /// All four directions.
+    /// 全部四个方向。
     pub const ALL: [Self; 4] = [Self::North, Self::South, Self::West, Self::East];
 
-    /// Return the opposite direction.
+    /// 返回相反方向。
     pub const fn opposite(&self) -> Self {
         match self {
             Self::North => Self::South,
@@ -23,7 +23,7 @@ impl Direction {
         }
     }
 
-    /// Rotate 90 degrees clockwise.
+    /// 顺时针旋转 90 度。
     pub const fn clockwise(&self) -> Self {
         match self {
             Self::North => Self::East,
@@ -33,7 +33,7 @@ impl Direction {
         }
     }
 
-    /// Rotate 90 degrees counter-clockwise.
+    /// 逆时针旋转 90 度。
     pub const fn counter_clockwise(&self) -> Self {
         match self {
             Self::North => Self::West,
@@ -43,7 +43,7 @@ impl Direction {
         }
     }
 
-    /// Return a random direction.
+    /// 返回一个随机方向。
     pub fn random<R: Rng>(rng: &mut R) -> Self {
         match rng.gen_range(0..4) {
             0 => Self::North,
